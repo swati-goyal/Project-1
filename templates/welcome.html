@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+            You are {{ username }}
+        <ul>
+        {% for review in reviews%}
+            <li>{{ review }}</li>
+        {% endfor %}
+        </ul>
+        <form action="{{ url_for('welcome') }}" method="POST" id="review">
+                Review: <input name="review" type="text">
+        </form>
+            <button name="review" form="review" type="submit">Submit Review</button>
+    </body>
+</html>
