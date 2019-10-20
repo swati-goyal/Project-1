@@ -1,6 +1,8 @@
+#!/usr/bin/python3
+
 import os
 
-from flask import Flask, session, render_template, request
+from flask import Flask, session, render_template, request, redirect, url_for
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,7 +26,6 @@ db = scoped_session(sessionmaker(bind=engine))
 def index():
     return render_template("index.html")
 
-
 @app.route("/register")
 def register():
     return render_template("register.html")
@@ -33,15 +34,71 @@ def register():
 def login():
     return render_template("login.html")
 
-
-@app.route("/user", methods=["GET","POST"])
-def welcome():
-    if session.get("reviews") is None:
-        session["reviews"] = []
+@app.route("/user-registration", methods=["GET","POST"])
+def registration():
     if request.method == "GET":
-        return "Please register or login to see the books"
-    if request.method == "POST":
-        name = request.form.get("username")
-        review = request.form.get("review")
-        session["reviews"].append(review)
-        return render_template("welcome.html", username=name, reviews=session["reviews"])
+        return render_template("error.html", message="Please go to home page to register or login.")
+
+    # Reusable queries
+    username_check_query = "Select * from users where username = :uname"
+    register_query = "Insert into users (username, password, email) values(:uname,:pswd,:emailId)"
+
+    # Get information from the register form
+    uname = request.form.get("username")
+    pswd = request.form.get("password")
+    emailId = request.form.get("email")
+
+    if (uname or pswd) is "":
+        return render_template("error.html", message="Username/Password can not be empty")
+
+    if len(pswd) < 6:
+        return render_template("error.html", message="Password length should be minimum 6 characters.")
+
+    if db.execute(username_check_query, {"uname": uname}).rowcount == 0:
+        db.execute(register_query, {"uname":uname, "pswd":pswd, "emailId": emailId})
+        db.commit()
+        return render_template("login.html", message="Successfully registered. Login to read or submit book reviews.")
+    else:
+        return render_template("error.html", message="Username already exists. Please try a different username.") 
+
+@app.route("/user", methods=["POST"])
+def welcome():
+    uname = request.form.get("username")
+    pswd = request.form.get("password")
+
+    validate_username = "Select * from users where username=:uname"
+    validate_user = "Select * from users where username=:uname and password=:pswd"
+
+    if (uname or pswd) is "":
+        return render_template("login.html", message="Username/Password can not be empty, both fields are required to login.")
+
+    if db.execute(validate_username, {"uname":uname}).rowcount == 0:
+        return render_template("login.html", message="Invalid username. Please provide correct credentials to login.")
+
+    if db.execute(validate_user, {"uname":uname, "pswd":pswd}).rowcount == 0:
+        return render_template("login.html", message="Invalid password. Please provide correct credentials to login.")
+    
+    return redirect(url_for('books'))
+    
+@app.route("/books")
+def books():
+    books = db.execute("Select * from book").fetchall()
+    return render_template("books.html", books=books, message="Welcome")
+
+@app.route("/book/<int:book_id>")
+def book(book_id):
+    book = db.execute("select * from book where id=:id",{"id":book_id}).fetchone()
+
+    if book is None:
+        return render_template("error.html", message="Book ID doesn't exist.")
+    
+    return render_template("book.html", book=book)
+
+# @app.route("/user/<int:user_id>")
+# def profile(user_id):
+#     pass
+
+# def main():
+#     books = db.execute("select * from book where title ilike '%woman%';").fetchall()
+#     for book in books:
+#         print(f"{book.title}")

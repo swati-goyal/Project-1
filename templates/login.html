@@ -4,10 +4,12 @@
 
     </head>
     <body>
+            <h2>{{ message }}</h2>
+
         <form action="{{ url_for('welcome') }}" method="POST" id="login">
         Username: <input name="username" type="text">
         Password: <input name="password" type="password">
         </form>
-        <button name="register" form="login" type="submit">Submit</button>
+        <button name="login" form="login" type="submit">Submit</button>
     </body>
 </html>

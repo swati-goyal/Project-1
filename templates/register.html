@@ -4,10 +4,10 @@
 
     </head>
     <body>
-        <form action="{{ url_for('welcome') }}" method="POST" id="register">
-        Email: <input name="email" type="email">
-        Username: <input name="username" type="text">
-        Password: <input name="password" type="password">
+        <form action="{{ url_for('registration')}}" method="POST" id="register">
+        Email: <input name="email" type="email" placeholder="Email is optional..">
+        Username: <input name="username" type="text" placeholder="Enter Username..">
+        Password: <input name="password" type="password" placeholder="Enter Password..">
         </form>
         <button name="register" form="register" type="submit">Submit</button>
     </body>
