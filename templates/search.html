@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <h2>{{ message }}</h2>
+    <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
+    <ul>
+        {% for book in books %}
+        <li><a href="{{ url_for('book', book_id=book.id) }}">{{ book.title }}, {{ book.author }}, {{ book.isbn}} </a></li>
+        {% endfor %}
+    </ul>
+    <a name="book-list" type="submit" href="{{ url_for('books') }}"><button>Go Back to Books!</button></a>
+
+</body>
+
+</html>
