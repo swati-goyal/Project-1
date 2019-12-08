@@ -6,6 +6,8 @@ from flask import Flask, session, render_template, request, redirect, url_for, f
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from unicodedata import normalize
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -109,14 +111,41 @@ def books():
 
     return render_template('error.html', message="Please login to access books.")
 
-@app.route("/book/<int:book_id>")
+@app.route("/book/<int:book_id>", methods=['GET', 'POST'])
 def book(book_id):
+    review_insert_query = "Insert into reviews (reviewer_id, book_isbn, rating, review_comment) values(:user_id,:book_isbn, :rating, :book_review)"
+    reviews = []
     if 'username' in session:
         uname = session['username']
         book = db.execute("select * from book where id=:id",{"id":book_id}).fetchone()
+
         if book is None:
             return render_template("error.html", message="Book ID doesn't exist.")
-        return render_template("book.html", book=book)
+
+        user_id = db.execute("select user_id from users where username=:uname",{"uname":uname}).fetchone()
+        isbn = db.execute("select isbn from book where id=:id",{"id":book_id}).fetchone()
+
+        for item in isbn:
+            book_isbn = str(item)
+        
+        for item in user_id:
+            user_id = str(item)
+        
+        book_review = str(request.form.get('review'))
+        book_rating = request.form.get('rating')
+        
+        if request.method == 'POST':
+            try:
+                db.execute(review_insert_query,{"user_id":int(user_id),"book_isbn":book_isbn, "rating": int(book_rating), "book_review":book_review})
+                db.commit()
+            except Exception as e:
+                # "You can not submit more than one review on a book."
+                return render_template('error.html', message="You can not submit more than one review on a book.")
+
+        reviews = db.execute("select * from reviews where book_isbn=:book_isbn", {"book_isbn":book_isbn}).fetchall()
+
+        return render_template("book.html", book=book, reviews=reviews)
+
     return render_template('error.html', message="Please login to access books.")
 
 # @app.route("/user/<int:user_id>")

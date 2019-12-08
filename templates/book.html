@@ -2,7 +2,6 @@
 <html>
 
 <head>
-
 </head>
 
 <body>
@@ -20,6 +19,34 @@
     </ul>
     <a name="book-list" type="submit" href="{{ url_for('books') }}"><button>Go Back to Books!</button></a>
     <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
+    <br>
+    <br>
+    
+    <form method="POST" id="review" action="{{ url_for('book', book_id=book.id) }}">
+    <!-- Dropdown for rating -->
+    Select Ratings
+    <select name="rating">
+            <option value="0">Select..</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+    </select>
+    <br>
+    <br>
+    <input type="text" name="review">
+    <button type="submit" form="review" name="submit-review" >Submit Review</button>
+    </form>
+
+    <h2>Reviews: </h2>
+    <ul>
+        {% for review in reviews %}
+        <li>Review: {{ review.review_comment }}</li>
+        <li>User: {{ review.reviewer_id }}</li>
+        {% endfor %}
+    </ul>
+
 </body>
 
 </html>
