@@ -2,26 +2,48 @@
 <html>
 
 <head>
-
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/books.css') }}">
 </head>
 
 <body>
-    <h2>{{ message }}</h2>
-    <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
+  <h2>{{ message }}</h2>
+  <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
 
-    <div class="search-container">
-        <form action="{{ url_for('search') }}" method="GET">
-            <input name='q' type="text" placeholder="Search.." name="search">
-            <button type="submit"></button>
+
+  <div class="container">
+    <br />
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8">
+        <form action="{{ url_for('search') }}" method="GET" class="card card-sm">
+          <div class="card-body row no-gutters align-items-center">
+            <div class="col-auto">
+              <i class="fas fa-search h4 text-body"></i>
+            </div>
+            <!--end of col-->
+            <div class="col">
+              <input name="q" class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search books by title, authors or isbn">
+            </div>
+            <!--end of col-->
+            <div class="col-auto">
+              <button class="btn btn-lg btn-success" type="submit">Search</button>
+            </div>
+            <!--end of col-->
+          </div>
         </form>
+      </div>
+      <!--end of col-->
     </div>
-
-    <ul>
-        {% for book in books %}
-        <li><a href="{{ url_for('book', book_id=book.id) }}">{{ book.id }} : {{ book.title }}</a></li>
-        {% endfor %}
-    </ul>
-
+  </div>
+  <div class="books-list">
+  <ul class="list-group list-group-flush list-group-horizontal-md">
+    <!-- Displays 14 random books from a list of 5000 -->
+    {% for b in range(num, num+13) %}
+    <li class="list-group-item list-group-item-action"><a href="{{ url_for('book', book_id=books[b].id) }}">{{ books[b].title }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
 </body>
 
 </html>

@@ -2,43 +2,32 @@
 <html>
 
 <head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 
 <body>
     <!-- {% if message %}
         <h2>{{ message }}</h2>
         {% endif %} -->
-
+    <div class=.container-fluid name="book-details">
     <h2>Book Details: </h2>
-    <ul>
-        <li>Title: {{ book.title }}</li>
-        <li>Author: {{ book.author }}</li>
-        <li>Year of Publish: {{ book.year }}</li>
-        <li>ISBN: {{ book.isbn }}</li>
-
+    <ul class="list-group">
+        <li class="list-group-item">Title: {{ book.title }}</li>
+        <li class="list-group-item">Author: {{ book.author }}</li>
+        <li class="list-group-item">Year of Publish: {{ book.year }}</li>
+        <li class="list-group-item">ISBN: {{ book.isbn }}</li>
     </ul>
-    <a name="book-list" type="submit" href="{{ url_for('books') }}"><button>Go Back to Books!</button></a>
-    <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
     <br>
-    <br>
-    
-    <form method="POST" id="review" action="{{ url_for('book', book_id=book.id) }}">
-    <!-- Dropdown for rating -->
-    Select Ratings
-    <select name="rating">
-            <option value="0">Select..</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-    </select>
-    <br>
-    <br>
-    <input type="text" name="review">
-    <button type="submit" form="review" name="submit-review" >Submit Review</button>
-    </form>
+    </div>
 
+  <div class=.container-fluid name="goodreads-data">
+    <ul>
+        <li>Average Rating on Goodreads: {{ data[0] }}</li>
+        <li>Ratings Count on Goodreads: {{ data[1] }}</li>
+    </ul>
+</div>
+  <div name="reviews">
+    {% if reviews %}
     <h2>Reviews: </h2>
     <ul>
         {% for review in reviews %}
@@ -46,6 +35,36 @@
         <li>User: {{ review.reviewer_id }}</li>
         {% endfor %}
     </ul>
+    {% else %}
+    <h6> Book has received no reviews yet! </h6>
+    {% endif %}
+    <br>
+  </div>
+
+  <div class=.container-fluid>
+  <form method="POST" id="review" action="{{ url_for('book', book_id=book.id) }}">
+  <!-- Dropdown for rating -->
+  Select Ratings
+  <select name="rating">
+          <option value="0">Select..</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+  </select>
+  <br>
+  <br>
+  <input type="text" name="review" placeholder="Your review..">
+  <button type="submit" form="review" name="submit-review" >Submit Review</button>
+  </form>
+  <br>
+</div>
+
+  <div>
+  <a name="book-list" type="submit" href="{{ url_for('books') }}"><button>Go Back to Books!</button></a>
+  <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
+</div>
 
 </body>
 

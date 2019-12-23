@@ -1,15 +1,42 @@
 <!DOCTYPE html>
 <html>
-    <head>
 
-    </head>
-    <body>
-            <h2>{{ message }}</h2>
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
 
+<body>
+  <div class="sidenav">
+    <div class="login-main-text">
+      <h2>Login Page</h2>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <div class="col-md-6 col-sm-12">
+      <div class="login-form">
         <form action="login" method="POST" id="login">
-        Username: <input name="username" type="text">
-        Password: <input name="password" type="password">
+          <div class="form-group">
+            <label for="username">User Name</label>
+            <input name="username" type="text" class="form-control" id="username" aria-describedby="usernameHelp">
+            {% if message %}
+            <small id="usernameHelp" class="form-text text-muted">{{ message }}</small>
+            {% else %}
+            <small id="usernameHelp" class="form-text text-muted">Provide correct username to login.</small>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input name="password" type="password" class="form-control" id="password" aria-describedby="passwordHelp">
+          </div>
+          <button type="submit" form="login" class="btn btn-black">Login</button>
+          <a type="submit" href="{{ url_for('register') }}"><button type="submit" class="btn btn-secondary" form="register">Register</button></a>
         </form>
-        <button name="login" form="login" type="submit">Submit</button>
-    </body>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>

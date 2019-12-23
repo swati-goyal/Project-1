@@ -2,12 +2,15 @@
 
 import os
 
-from flask import Flask, session, render_template, request, redirect, url_for, flash
+from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
+import requests
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from unicodedata import normalize
 from datetime import datetime
+import pprint
+import random
 
 
 app = Flask(__name__)
@@ -38,7 +41,7 @@ def register():
 def login_page():
     if request.method == 'GET':
         return render_template("login.html")
-    
+
     if request.method == 'POST':
         uname = request.form.get("username")
         pswd = request.form.get("password")
@@ -47,13 +50,13 @@ def login_page():
 
         if (uname or pswd) is "":
             return render_template("login.html", message="Username/Password can not be empty, both fields are required to login.")
-    
+
         if db.execute(validate_username, {"uname":uname}).rowcount == 0:
             return render_template("login.html", message="Invalid username. Please provide correct credentials to login.")
-    
+
         if db.execute(validate_user, {"uname":uname, "pswd":pswd}).rowcount == 0:
             return render_template("login.html", message="Invalid password. Please provide correct credentials to login.")
-        
+
         session['username'] = uname
         return redirect(url_for('books'))
 
@@ -88,7 +91,7 @@ def registration():
         return render_template("login.html", message="Successfully registered. Login to read or submit book reviews.")
     else:
         flash("Username already exists!")
-        return render_template("error.html", message="Username already exists. Please try a different username.") 
+        return render_template("error.html", message="Username already exists. Please try a different username.")
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -107,7 +110,8 @@ def books():
     if 'username' in session:
         uname = session['username']
         books = db.execute("Select * from book").fetchall()
-        return render_template("books.html", books=books, message="Welcome "+ uname)
+        x = random.randrange(0,5001,13)
+        return render_template("books.html", books=books, message="Welcome "+ uname, num=x)
 
     return render_template('error.html', message="Please login to access books.")
 
@@ -127,13 +131,13 @@ def book(book_id):
 
         for item in isbn:
             book_isbn = str(item)
-        
+
         for item in user_id:
             user_id = str(item)
-        
+
         book_review = str(request.form.get('review'))
         book_rating = request.form.get('rating')
-        
+
         if request.method == 'POST':
             try:
                 db.execute(review_insert_query,{"user_id":int(user_id),"book_isbn":book_isbn, "rating": int(book_rating), "book_review":book_review})
@@ -144,9 +148,53 @@ def book(book_id):
 
         reviews = db.execute("select * from reviews where book_isbn=:book_isbn", {"book_isbn":book_isbn}).fetchall()
 
-        return render_template("book.html", book=book, reviews=reviews)
+        # Get good reads data
+        data = [0, 0]
+        try:
+            goodreads_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "K0pOqH7V3rc9YKReYXz40g", "isbns": isbn}, timeout=3.05)
+            response = goodreads_data.json()
+            avg_rating = response["books"][0]["average_rating"]
+            review_count = response["books"][0]["work_ratings_count"]
+            data=[avg_rating,review_count]
+        except Exception as e:
+            print(e.message)
+
+        return render_template("book.html", book=book, reviews=reviews, data=data)
 
     return render_template('error.html', message="Please login to access books.")
+
+@app.route("/api/<string:book_isbn>")
+def book_api(book_isbn):
+      """Return details about a single flight."""
+
+      # Make sure flight exists.
+      book = db.execute("select * from book where isbn=:isbn",{"isbn":book_isbn}).fetchone()
+      if book is None:
+          return jsonify({"error": "Invalid Book ISBN"}), 404
+
+      # Get all details from book.
+      book_isbn = book.isbn
+      reviews = db.execute("select * from reviews where book_isbn=:book_isbn", {"book_isbn":book_isbn}).fetchall()
+      review_count = len(reviews)
+      comments = []
+      average_rating = 0.0
+      for review in reviews:
+          comments.append(review.review_comment)
+          average_rating += review.rating
+
+      if review_count > 0:
+          average_rating /= review_count
+      else:
+          average_rating = 0.0
+
+      return jsonify({
+              "title": book.title,
+              "author": book.author,
+              "year": book.year,
+              "isbn": book_isbn,
+              "review_count": review_count,
+              "average_score": average_rating
+            })
 
 # @app.route("/user/<int:user_id>")
 # def profile(user_id):
