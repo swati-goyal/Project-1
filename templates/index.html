@@ -3,27 +3,24 @@
 
 <head>
   <title>Read The Book</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 
 <body>
   <div class="sidenav">
     <div class="login-main-text">
+      <h2> Welcome humans! </h2>
+      <br>
       <h2> Read The Book </h2>
     </div>
   </div>
   <div class="main">
-    <div class="col-md-6 col-sm-12">
-      <div class="login-form">
-        <div class="form-group">
-          <a name="login" type="submit" href="{{ url_for('login_page') }}"><button type="button" class="btn btn-lg btn-black" class="form-control">Login</button></a>
+        <div class="form">
+          <a name="login" type="submit" href="{{ url_for('login_page') }}"><button type="button" id="login-button" class="btn-black">Login</button></a>
         </div>
-        <div class="form-group">
-          <a name="register" type="submit" href="{{ url_for('register') }}"><button type="button" class="btn btn-lg btn-black" class="form-control">Register</button></a>
+        <div class="form">
+          <a name="register" type="submit" href="{{ url_for('register') }}"><button type="button" id="register-button" class="btn-black">Register</button></a>
         </div>
-      </div>
-    </div>
   </div>
 </body>
 

@@ -2,19 +2,29 @@
 <html>
 
 <head>
-
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/books.css') }}">
 </head>
 
 <body>
+  <div class="common-navbar">
+    <nav class="navbar navbar-light bg-light">
+      <a name="book-list" type="submit" href="{{ url_for('books') }}"><button>Go Back to Books!</button></a>
+      <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
+  </div>
+  <div class="container">
+    {% if message %}
     <h2>{{ message }}</h2>
-    <a name="logout" type="submit" href="{{ url_for('logout') }}"><button>Logout</button></a>
-    <ul>
+    {% endif %}
+  </nav>
+    <div class="books-list">
+      <ul class="list-group list-group-flush list-group-horizontal-md">
         {% for book in books %}
-        <li><a href="{{ url_for('book', book_id=book.id) }}">{{ book.title }}, {{ book.author }}, {{ book.isbn}} </a></li>
+        <li class="list-group-item list-group-item-action"><a href="{{ url_for('book', book_id=book.id) }}">{{ book.title }}, {{ book.author }}, {{ book.isbn}} </a></li>
         {% endfor %}
-    </ul>
-    <a name="book-list" type="submit" href="{{ url_for('books') }}"><button>Go Back to Books!</button></a>
-
+      </ul>
+    </div>
+  </div>
 </body>
 
 </html>

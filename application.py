@@ -15,6 +15,7 @@ import random
 
 app = Flask(__name__)
 app.secret_key = '301289'
+app.static_folder = 'static'
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -96,6 +97,7 @@ def registration():
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('q')
+    message = ""
     if not query:
         flash("You did not search for anything")
         return redirect(url_for('books'))
@@ -103,21 +105,23 @@ def search():
         q = '%'+ query +'%'
         dbQuery = db.execute('select * from book where title ilike :query or isbn ilike :query or author ilike :query order by id limit 10', {"query": q})
         res = dbQuery.fetchall()
-    return render_template('search.html', books=res)
+    if len(res)==0:
+        message = "No books matching this query!"
+    return render_template('search.html', books=res, message=message)
 
 @app.route("/books")
 def books():
     if 'username' in session:
         uname = session['username']
         books = db.execute("Select * from book").fetchall()
-        x = random.randrange(0,5001,13)
-        return render_template("books.html", books=books, message="Welcome "+ uname, num=x)
+        x = random.randrange(0,5001,12)
+        return render_template("books.html", books=books, message="Welcome "+ uname.capitalize(), num=x)
 
     return render_template('error.html', message="Please login to access books.")
 
 @app.route("/book/<int:book_id>", methods=['GET', 'POST'])
 def book(book_id):
-    review_insert_query = "Insert into reviews (reviewer_id, book_isbn, rating, review_comment) values(:user_id,:book_isbn, :rating, :book_review)"
+    review_insert_query = "Insert into reviews (reviewer_id, book_isbn, rating, review_comment) values(:user_id, :book_isbn, :rating, :book_review)"
     reviews = []
     if 'username' in session:
         uname = session['username']
@@ -138,16 +142,6 @@ def book(book_id):
         book_review = str(request.form.get('review'))
         book_rating = request.form.get('rating')
 
-        if request.method == 'POST':
-            try:
-                db.execute(review_insert_query,{"user_id":int(user_id),"book_isbn":book_isbn, "rating": int(book_rating), "book_review":book_review})
-                db.commit()
-            except Exception as e:
-                # "You can not submit more than one review on a book."
-                return render_template('error.html', message="You can not submit more than one review on a book.")
-
-        reviews = db.execute("select * from reviews where book_isbn=:book_isbn", {"book_isbn":book_isbn}).fetchall()
-
         # Get good reads data
         data = [0, 0]
         try:
@@ -159,6 +153,21 @@ def book(book_id):
         except Exception as e:
             print(e.message)
 
+        # Getting details of reviews on the book
+        reviews = db.execute("select * from reviews where book_isbn=:book_isbn", {"book_isbn":book_isbn}).fetchall()
+
+        # Submitting the review
+        if request.method == 'POST':
+            try:
+                if int(book_rating) == 0:
+                    return render_template("book.html", book=book, reviews=reviews, data=data, message="Please select proper rating for submitting your review.")
+                else:
+                    db.execute(review_insert_query,{"user_id":int(user_id),"book_isbn":book_isbn, "rating": int(book_rating), "book_review":book_review})
+                    db.commit()
+            except Exception as e:
+                return render_template('error.html', message="You can not submit more than one review on a book.")
+
+        reviews = db.execute("select * from reviews where book_isbn=:book_isbn", {"book_isbn":book_isbn}).fetchall()
         return render_template("book.html", book=book, reviews=reviews, data=data)
 
     return render_template('error.html', message="Please login to access books.")

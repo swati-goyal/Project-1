@@ -1,3 +1,17 @@
-.books-list{
+#rating {
+  position: relative;
+  display: inline-block;
+}
+
+.list-group-item {
   text-align: center;
 }
+
+#book-details {
+  align-content:center;
+}
+
+#book-title {
+  text-align:center;
+}
+
