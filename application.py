@@ -204,12 +204,5 @@ def book_api(book_isbn):
               "review_count": review_count,
               "average_score": average_rating
             })
+            
 
-# @app.route("/user/<int:user_id>")
-# def profile(user_id):
-#     pass
-
-# def main():
-#     books = db.execute("select * from book where title ilike '%woman%';").fetchall()
-#     for book in books:
-#         print(f"{book.title}")
