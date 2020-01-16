@@ -30,6 +30,15 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+try:
+    connection = psycopg2.connect(user = "erpjbubameieud",
+                                  password = "3647f8b223a70ff28483a6637a32245644df263cb8c24a93ac478ac949d63771",
+                                  host = "ec2-54-243-193-59.compute-1.amazonaws.com",
+                                  port = "5432",
+                                  database = "d9ffrbpg4is8tk")
+except:
+    print("Unable to connect to database")
+
 @app.route("/")
 def index():
     return render_template("index.html")
