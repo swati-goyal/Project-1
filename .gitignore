@@ -5,3 +5,4 @@ venv
 *.bak
 .DS_Store
 .vscode
+_pycache_
