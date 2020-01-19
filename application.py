@@ -9,6 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from unicodedata import normalize
 from datetime import datetime
+import psycopg2
 import pprint
 import random
 
@@ -37,7 +38,7 @@ try:
                                   port = "5432",
                                   database = "d9ffrbpg4is8tk")
 except:
-    print("Unable to connect to database")
+    render_template("error.html", message="Database connection failed.")
 
 @app.route("/")
 def index():
@@ -215,3 +216,6 @@ def book_api(book_isbn):
             })
             
 
+if __name__ == ' __main__':
+    #app.debug = True
+    app.run()
