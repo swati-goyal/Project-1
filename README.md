@@ -12,3 +12,4 @@ Web Programming with Python, Flask and Jinja2
 8. App maintains user session as long as you don't logout.
 9. It looked tedious to display 5k books on `books` page, so I have used a function which displays only 15 books randomly.
 
+Currently hosted: http://flask-bookread-app.herokuapp.com/
