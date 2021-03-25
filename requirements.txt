@@ -28,7 +28,7 @@ pycparser==2.19
 pyparsing==2.4.6
 python-engineio==3.11.2
 python-socketio==4.4.0
-PyYAML==5.1.2
+PyYAML==5.4
 redis==3.3.11
 requests==2.22.0
 six==1.12.0
