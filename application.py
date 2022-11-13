@@ -1,4 +1,4 @@
-#!/usr/bin/python3.7.4
+#!/usr/bin/python3.11.0
 
 import os
 
@@ -152,7 +152,7 @@ def book(book_id):
             review_count = response["books"][0]["work_ratings_count"]
             data=[avg_rating,review_count]
         except Exception as e:
-            print(e.message)
+            print(e)
 
         # Getting details of reviews on the book
         reviews = db.execute("select * from reviews where book_isbn=:book_isbn", {"book_isbn":book_isbn}).fetchall()
